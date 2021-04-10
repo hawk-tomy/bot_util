@@ -1,4 +1,13 @@
 import logging
 
 
-logger = logging.getLogger(__name__).addHandler(logging.NullHandler())
+from .config import config
+
+
+__all__ = (
+    'config',
+)
+
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())

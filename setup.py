@@ -10,7 +10,7 @@ setup(
     version='0.0.1',
     packages=['bot_util'],
     license='MIT',
-    description='bot用の便利関数など',
+    description='自作bot用の便利関数など',
     long_description=readme,
     long_description_content_type="text/markdown",
     include_package_data=True,
