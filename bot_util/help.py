@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-
-
 import discord
 from discord.ext import commands
 
@@ -9,13 +6,6 @@ from . import config
 
 
 __all__ = ('Help')
-
-@dataclass
-class EmbedColor:
-    color: int= 0x54c3f1
-
-
-config.add_default_config('embed_color',EmbedColor)
 
 
 class Help(commands.HelpCommand):
