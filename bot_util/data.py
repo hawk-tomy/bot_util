@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 
-from dataclasses import asdict, dataclass, field, is_dataclass
+from dataclasses import asdict, is_dataclass
 from pathlib import Path
 import logging
-from typing import Any, NewType, NoReturn, TypeVar, Union
+from typing import Any, NewType
 
 
 import yaml
@@ -48,7 +48,7 @@ class __Data:
 
     def _setter(self,p: Path)-> None:
         name = p.stem
-        if name.startswith('_'):
+        if name.startswith('_') or name in self.__names:
             return
         self.__names.add(name)
         cls = self.__dataclass.get(name,None)
