@@ -16,6 +16,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'pyyaml',
-        'discord-ext-menus@git+https://github.com/Rapptz/discord-ext-menus'
+        'discord.py',
+        'discord-ext-menus@git+https://github.com/Rapptz/discord-ext-menus',
         ],
 )
