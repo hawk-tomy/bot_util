@@ -57,7 +57,7 @@ class __Config:
             v = self.__default_config[k].__class__(**v)
             setattr(self.__class__,k,v)
 
-    def add_default_config(self, data: D, key: str= None)-> __Config:
+    def add_default_config(self, data: D, /, *, key: str= None)-> __Config:
         if not is_dataclass(data):
             raise TypeError('data must be instance or class of dataclass.')
         if isinstance(data, type):
