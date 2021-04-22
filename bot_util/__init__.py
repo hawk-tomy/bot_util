@@ -22,7 +22,7 @@ __all__ = (
 class EmbedColor:
     color: int= 0x54c3f1
 
-config.add_default_config('embed_color',EmbedColor)
+config.add_default_config(EmbedColor, key='embed_color')
 
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
