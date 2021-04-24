@@ -13,14 +13,14 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
-D = NewType('dataclass',Any)
+D = NewType('dataclass', Any)
 C = dict[str, D]
 
 
 YAML_DUMP_CONFIG = {
-    'encoding':'utf8',
-    'allow_unicode':True,
-    'default_flow_style':False
+    'encoding': 'utf8',
+    'allow_unicode': True,
+    'default_flow_style': False
     }
 
 
@@ -33,7 +33,7 @@ class __Config:
     def __getattr__(self, name):
         self.load_config()
         if name in self.__names:
-            return getattr(self,name)
+            return getattr(self, name)
         else:
             raise AttributeError(f'{name} is not found')
 
@@ -52,14 +52,14 @@ class __Config:
         else:
             logger.warning(f'create config.yaml file')
             with open('./config.yaml','w')as f:
-                yaml.dump(self.default_config,f,**YAML_DUMP_CONFIG)
+                yaml.dump(self.default_config, f, **YAML_DUMP_CONFIG)
             self.__loaded_config = self.default_config
 
     def _setter(self, key: str)-> None:
         value = self.__loaded_config
         self.__names.add(key)
         value = self.__default_config[key](**value)
-        setattr(self.__class__,key,value)
+        setattr(self.__class__, key, value)
 
     def add_default_config(self, data: D, /, *, key: str= None)-> __Config:
         if not is_dataclass(data):
@@ -68,7 +68,7 @@ class __Config:
             data = data.__class__
         if key is None:
             key = data.__name__
-        if not isinstance(key,str):
+        if not isinstance(key, str):
             raise KeyError('key must be str.')
         if key.startswith('_') or key in ('add_default_config', 'load_config', 'default_config'):
             raise KeyError(f'you cannot use this key({key}).')
@@ -78,7 +78,7 @@ class __Config:
     @property
     def default_config(self)-> dict:
         as_dict = {}
-        for k,v in self.__default_config.items():
+        for k, v in self.__default_config.items():
             as_dict[k] = asdict(v)
         return as_dict
 
