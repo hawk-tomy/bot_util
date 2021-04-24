@@ -11,7 +11,8 @@ import re
 from discord import Embed
 
 
-from . import config
+from . import _bot_config
+from .config import config
 
 
 regex_discord_message_url = (

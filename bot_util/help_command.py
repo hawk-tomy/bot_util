@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 
 
-from . import config
+from . import _bot_config
+from .config import config
 
 
 __all__ = ('Help')

@@ -10,6 +10,9 @@ from typing import Any, NewType, Union
 import yaml
 
 
+__all__ = ('ConigBase','config')
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,7 +27,9 @@ YAML_DUMP_CONFIG = {
     }
 
 
-@dataclass
+class ConfigBase:pass
+
+
 class __Config:
     __default_config: C = field(default_factory=dict)
     __names: set[str] = field(default_factory=set)
