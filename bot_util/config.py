@@ -28,7 +28,7 @@ YAML_DUMP_CONFIG = {
 class __Config:
     __default_config: C = field(default_factory=dict)
     __names: set[str] = field(default_factory=set)
-    __loaded_config: dict = field(default_factory=dict)
+    __loaded_config: dict = None
 
     def __getattr__(self, name):
         self.load_config()
@@ -41,7 +41,7 @@ class __Config:
         default, names = self.__default_config, self.__names
         keys = default.keys() - names
         if keys:
-            self.__liader
+            self.__loader()
             for key in keys:
                 self._setter(key)
 
@@ -53,7 +53,7 @@ class __Config:
             logger.warning(f'create config.yaml file')
             with open('./config.yaml','w')as f:
                 yaml.dump(self.default_config,f,**YAML_DUMP_CONFIG)
-            self.__loaded_config = self.default_config.copy()
+            self.__loaded_config = self.default_config
 
     def _setter(self, key: str)-> None:
         value = self.__loaded_config
