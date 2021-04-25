@@ -7,7 +7,7 @@ setup(
     name='bot_util',
     author='hawk_tomy',
     url='https://github.com/hawk-tomy/bot_util',
-    version='0.2.0',
+    version='0.2.1',
     packages=['bot_util'],
     license='MIT',
     description='自作bot用の便利関数など',
