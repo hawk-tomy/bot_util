@@ -98,7 +98,10 @@ class __Config:
     def default_config(self)-> dict:
         as_dict = {}
         for k, v in self.__default_config.items():
-            as_dict[k] = asdict(v)
+            try:
+                as_dict[k] = asdict(v())
+            except Exception:
+                continue
         return as_dict
 
 
