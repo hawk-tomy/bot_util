@@ -56,14 +56,25 @@ class __Config:
                 self.__loaded_config = yaml.safe_load(f)
         else:
             logger.warning(f'create config.yaml file')
-            with open('./config.yaml','w')as f:
-                yaml.dump(self.default_config, f, **YAML_DUMP_CONFIG)
             self.__loaded_config = self.default_config
+            self._save()
+
+    def _save(self):
+        with open('./config.yaml','w')as f:
+            yaml.dump(self.__loaded_config, f, **YAML_DUMP_CONFIG)
 
     def _setter(self, key: str)-> None:
-        value = self.__loaded_config[key]
+        value = self.__loaded_config.get(key)
+        if value is None:
+            try:
+                value = self.__default_config[key]()
+            except Exception:
+                return
+            else:
+                self.__loaded_config[key] = asdict(value)
+        else:
+            value = self.__default_config[key](**value)
         self.__names.add(key)
-        value = self.__default_config[key](**value)
         setattr(self.__class__, key, value)
 
     def add_default_config(
