@@ -1,4 +1,4 @@
-discord
-git+https://github.com/Rapptz/discord-ext-menus
+discord.py
 pyyaml
-git+https://github.com/DiscordBotPortalJP/dispander
+dispander
+git+https://github.com/Rapptz/discord-ext-menus
