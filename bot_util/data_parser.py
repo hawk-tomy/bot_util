@@ -21,7 +21,7 @@ D = dict[str, DataBase]
 
 @dataclass
 class DataParser:
-    _path: str = './data'
+    _path: Path = './data'
     __dataclass: D = field(default_factory=dict)
     __names: set[str] = field(default_factory=set)
     __reload_funcs: list[Callable] = field(default_factory=list)
@@ -41,24 +41,25 @@ class DataParser:
         if not self._path.exists():
             self._path.mkdir()
             logger.warning(f'create data dirctory')
-        for p in self._path.iterdir():
-            if not p.is_file() or p.suffix not in ('.yaml','.yml'):
-                continue
-            self._setter(p)
+        paths = set(
+            p.stem for p in self._path.iterdir()
+                if p.is_file() and p.suffix in ('.yaml','.yml')
+                )
+        keys = (self.__dataclass.keys() - self.__names) & paths
+        for key in keys:
+            self._setter(key)
 
-    def _setter(self,p: Path)-> None:
-        name = p.stem
-        if name.startswith('_') or name in self.__names:
+    def _setter(self, key: str)-> None:
+        if (not ((p:=self._path/f'{key}.yaml').exists()
+                or (p:=self._path/f'{key}.yml').exists())
+                or key in self.__names):
             return
-        self.__names.add(name)
-        cls = self.__dataclass.get(name,None)
+        self.__names.add(key)
+        cls = self.__dataclass[key]
 
         def loader()-> DataBase:
             with p.open()as f:
-                value = yaml.safe_load(f)
-            if cls is not None:
-                value = cls(**value)
-            return value
+                return cls(**yaml.safe_load(f))
 
         value: DataBase = loader()
 
@@ -76,9 +77,9 @@ class DataParser:
         self.__reload_funcs.append(reload_func)
         self.__save_funcs.append(save_func)
 
-        setattr(self.__class__,name,property(getter))
-        setattr(self.__class__,f'save_{name}',save_func)
-        setattr(self.__class__,f'reload_{name}',reload_func)
+        setattr(self.__class__,key,property(getter))
+        setattr(self.__class__,f'save_{key}',save_func)
+        setattr(self.__class__,f'reload_{key}',reload_func)
 
     def add_dataclass(self, key: str, data: D)-> DataParser:
         data = data if isinstance(data, type) else type(data)
@@ -86,6 +87,10 @@ class DataParser:
             raise TypeError('data must be instance or class of dataclass.')
         if not isinstance(key,str):
             raise KeyError('key must be str.')
+        if key.startswith('_') or key in (
+                    'load_data','add_dataclass','all_reload','all_save'
+                    ):
+            raise KeyError(f'you cannot use this key({key}).')
         self.__dataclass[key] = data
         return self
 
