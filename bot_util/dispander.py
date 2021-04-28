@@ -33,7 +33,7 @@ async def dispand(message):
             # Send the second and subsequent attachments
             # #with embed (named 'embed') respectively:
             for attachment in m.attachments[1:]:
-                embed = Embed()
+                embed = Embed(color=config.embed_setting.color)
                 embed.set_image(
                     url=attachment.proxy_url
                 )
@@ -66,7 +66,7 @@ def compose_embed(message):
     embed = Embed(
         description=message.content,
         timestamp=message.created_at,
-        color=config.embed_color.color
+        color=config.embed_setting.color
     )
     embed.set_author(
         name=message.author.display_name,

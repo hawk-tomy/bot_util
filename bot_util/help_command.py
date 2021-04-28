@@ -15,7 +15,7 @@ class Help(commands.HelpCommand):
         self.no_category = "カテゴリ未設定"
         self.command_attrs["short_doc"] = "このメッセージを表示します。"
         self.command_attrs["help"] = "このBOTのヘルプコマンドです。"
-        self.color = config.embed_color.color
+        self.color = config.embed_setting.color
 
     async def create_category_tree(self,category):
         content_line, lv = [], []

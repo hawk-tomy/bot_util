@@ -5,8 +5,8 @@ from .config import config, ConfigBase
 
 
 @dataclass
-class EmbedColor(ConfigBase):
+class EmbedSetting(ConfigBase):
     color: int= 0x54c3f1
 
 
-config.add_default_config(EmbedColor, key='embed_color')
+config.add_default_config(EmbedSetting, key='embed_setting')
