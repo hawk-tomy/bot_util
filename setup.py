@@ -1,13 +1,13 @@
 from setuptools import setup
 
-with open('README.md')as f:
+with open('README.md', encoding='utf-8')as f:
     readme = f.read()
 
 setup(
     name='bot_util',
     author='hawk_tomy',
     url='https://github.com/hawk-tomy/bot_util',
-    version='0.2.1',
+    version='0.2.2',
     packages=['bot_util'],
     license='MIT',
     description='自作bot用の便利関数など',
