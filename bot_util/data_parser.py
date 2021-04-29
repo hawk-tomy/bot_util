@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, is_dataclass
 import logging
 from pathlib import Path
-from typing import Callable Union
+from typing import Callable, Union
 
 
 import yaml
