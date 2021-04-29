@@ -27,7 +27,7 @@ class DataParser:
     __reload_funcs: list[Callable] = field(default_factory=list)
     __save_funcs: list[Callable] = field(default_factory=list)
 
-    def __pre_init__(self):
+    def __post_init__(self):
         self._path = Path(self._path)
 
     def __getattr__(self, name):
@@ -58,7 +58,7 @@ class DataParser:
         cls = self.__dataclass[key]
 
         def loader()-> DataBase:
-            with p.open()as f:
+            with p.open(encoding='utf-8')as f:
                 return cls(**yaml.safe_load(f))
 
         value: DataBase = loader()
@@ -67,7 +67,7 @@ class DataParser:
             return value
 
         def save_func(self)-> None:
-            with p.open('w')as f:
+            with p.open('w',encoding='utf-8')as f:
                 yaml.dump(asdict(value),f,**YAML_DUMP_CONFIG)
 
         def reload_func(self)-> None:
@@ -81,10 +81,12 @@ class DataParser:
         setattr(self.__class__,f'save_{key}',save_func)
         setattr(self.__class__,f'reload_{key}',reload_func)
 
-    def add_dataclass(self, key: str, data: D)-> DataParser:
+    def add_dataclass(self, data: D, *, key: str=None)-> DataParser:
         data = data if isinstance(data, type) else type(data)
         if not is_dataclass(data) or not issubclass(data, DataBase):
             raise TypeError('data must be instance or class of dataclass.')
+        if key is None:
+            key = data.__name__
         if not isinstance(key,str):
             raise KeyError('key must be str.')
         if key.startswith('_') or key in (

@@ -20,12 +20,12 @@ C = dict[str, ConfigBase]
 
 @dataclass
 class ConfigParser:
-    _path: str = './config.yaml'
+    _path: Path = './config.yaml'
     __default_config: C = field(default_factory=dict)
     __names: set[str] = field(default_factory=set)
     __loaded_config: dict = None
 
-    def __pre_init__(self):
+    def __post_init__(self):
         self._path = Path(self._path)
 
     def __getattr__(self, name):
@@ -45,7 +45,7 @@ class ConfigParser:
 
     def _loader(self)-> None:
         if self._path.exists():
-            with self._path.open()as f:
+            with self._path.open(encoding='utf-8')as f:
                 self.__loaded_config = yaml.safe_load(f)
         else:
             logger.warning(f'create config.yaml file')
@@ -53,7 +53,7 @@ class ConfigParser:
             self._save()
 
     def _save(self):
-        with self._path.open('w')as f:
+        with self._path.open('w',encoding='Utf-8')as f:
             yaml.dump(self.__loaded_config, f, **YAML_DUMP_CONFIG)
 
     def _setter(self, key: str)-> None:
@@ -87,6 +87,8 @@ class ConfigParser:
         flag = key in self.__default_config
         self.__default_config[key] = data
         if flag:
+            if self.__loaded_config is None:
+                self._loader()
             self._setter(key)
         return self
 
