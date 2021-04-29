@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, is_dataclass
 import logging
 from pathlib import Path
-from typing import Callable
+from typing import Callable Union
 
 
 import yaml
@@ -45,7 +45,7 @@ class DataParser:
             p.stem for p in self._path.iterdir()
                 if p.is_file() and p.suffix in ('.yaml','.yml')
                 )
-        keys = (self.__dataclass.keys() - self.__names) & paths
+        keys = paths - self.__names
         for key in keys:
             self._setter(key)
 
@@ -55,20 +55,31 @@ class DataParser:
                 or key in self.__names):
             return
         self.__names.add(key)
-        cls = self.__dataclass[key]
+        cls = self.__dataclass.get(key)
+        if cls is not None:
 
-        def loader()-> DataBase:
-            with p.open(encoding='utf-8')as f:
-                return cls(**yaml.safe_load(f))
+            def loader()-> DataBase:
+                with p.open(encoding='utf-8')as f:
+                    return cls(**yaml.safe_load(f))
+
+            def save_func(self)-> None:
+                with p.open('w',encoding='utf-8')as f:
+                    yaml.dump(asdict(value),f,**YAML_DUMP_CONFIG)
+
+        else:
+
+            def loader()-> Union[dict, list]:
+                with p.open(encoding='utf-8')as f:
+                    return yaml.safe_load(f)
+
+            def save_func(self)-> None:
+                with p.open('w',encoding='utf-8')as f:
+                    yaml.dump(value,f,**YAML_DUMP_CONFIG)
 
         value: DataBase = loader()
 
         def getter(self)-> DataBase:
             return value
-
-        def save_func(self)-> None:
-            with p.open('w',encoding='utf-8')as f:
-                yaml.dump(asdict(value),f,**YAML_DUMP_CONFIG)
 
         def reload_func(self)-> None:
             nonlocal value
