@@ -28,6 +28,7 @@ class DataParser:
     __names: set[str] = field(default_factory=set, init=False)
     __reload_funcs: list[Callable] = field(default_factory=list, init=False)
     __save_funcs: list[Callable] = field(default_factory=list, init=False)
+    __yaml_config: dict[str,dict] = field(default_factory=dict, init=False)
 
     def __post_init__(self, path):
         self.__path = Path(path)
@@ -57,6 +58,7 @@ class DataParser:
                 or key in self.__names):
             return
         self.__names.add(key)
+        yaml_config = YAML_DUMP_CONFIG | self.__yaml_config[key]
         cls = self.__dataclass.get(key)
         if cls is None:
 
@@ -66,47 +68,59 @@ class DataParser:
 
             def save_func(self)-> None:
                 with p.open('w',encoding='utf-8')as f:
-                    yaml.dump(value,f,**YAML_DUMP_CONFIG)
+                    yaml.dump(value, f, **yaml_config)
 
         else:
 
             def loader()-> DataBase:
-                with p.open(encoding='utf-8')as f:
+                with p.open(encoding= 'utf-8')as f:
                     return cls(**yaml.safe_load(f))
 
             def save_func(self)-> None:
-                with p.open('w',encoding='utf-8')as f:
-                    yaml.dump(asdict(value),f,**YAML_DUMP_CONFIG)
+                with p.open('w', encoding= 'utf-8')as f:
+                    yaml.dump(asdict(value), f, **yaml_config)
 
-        value: DataBase = loader()
+        value: Union[DataBase, dict, list]= loader()
 
         def getter(self)-> DataBase:
             return value
 
         def reload_func(self)-> None:
             nonlocal value
-            value = loader()
+            value: Union[DataBase, dict, list]= loader()
 
         self.__reload_funcs.append(reload_func)
         self.__save_funcs.append(save_func)
 
-        setattr(self.__class__,key,property(getter))
-        setattr(self.__class__,f'save_{key}',save_func)
-        setattr(self.__class__,f'reload_{key}',reload_func)
+        setattr(self.__class__, key, property(getter))
+        setattr(self.__class__, f'save_{key}', save_func)
+        setattr(self.__class__, f'reload_{key}', reload_func)
 
-    def add_dataclass(self: DP, data: D, *, key: str=None)-> DP:
+    def add_dataclass(
+            self: DP, data: D, *, key: str= None, yaml_config: dict= None
+            )-> DP:
+
         data = data if isinstance(data, type) else type(data)
         if not is_dataclass(data) or not issubclass(data, DataBase):
             raise TypeError('data must be instance or class of dataclass.')
+
         if key is None:
             key = data.__name__
         if not isinstance(key,str):
             raise KeyError('key must be str.')
         if key.startswith('_') or key in (
-                    'load_data','add_dataclass','all_reload','all_save'
-                    ):
-            raise KeyError(f'you cannot use this key({key}).')
+                'load_data','add_dataclass','all_reload','all_save'):
+            raise KeyError(f'you cannot use this key: {key}.')
+
+        if yaml_config is None:
+            yaml_config = {}
+        if not isinstance(yaml_config,dict):
+            raise ValueError(f'yaml config must be dict. not {yaml_config}.')
+
+        self.__yaml_config[key] = yaml_config
         self.__dataclass[key] = data
+        if key in self.__names:
+            self.load_data()
         return self
 
     def all_reload(self):
