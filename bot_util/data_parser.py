@@ -58,7 +58,7 @@ class DataParser:
                 or key in self.__names):
             return
         self.__names.add(key)
-        yaml_config = YAML_DUMP_CONFIG | self.__yaml_config[key]
+        yaml_config = YAML_DUMP_CONFIG | self.__yaml_config.get(key, {})
         cls = self.__dataclass.get(key)
         if cls is None:
 
@@ -87,7 +87,7 @@ class DataParser:
 
         def reload_func(self)-> None:
             nonlocal value
-            value: Union[DataBase, dict, list]= loader()
+            value = loader()
 
         self.__reload_funcs.append(reload_func)
         self.__save_funcs.append(save_func)
