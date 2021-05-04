@@ -78,15 +78,15 @@ class ConfigParser:
         default_class = self.__default_config.get(key)
         if loaded_value is None:
             try:
-                value = default_class[key]()
+                value = default_class()
             except Exception:
                 return
             else:
-                self.__loaded_config[key] = asdict(value)
+                self.__loaded_config = asdict(value)
         elif default_class is None:
             value = loaded_value
         else:
-            value = default_class[key](**loaded_value)
+            value = default_class(**loaded_value)
         self.__names.add(key)
         setattr(self.__class__, key, value)
 

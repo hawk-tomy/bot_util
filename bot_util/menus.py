@@ -181,6 +181,10 @@ class MsgMenuBase:
         """
         logger.exception("Unhandled exception during menu update by msg.", exc_info=exc)
 
+    def should_add_reactions(self):
+        """:class:`bool`: Whether to add reactions to this menu session."""
+        return len(self.buttons)
+
 
 class MsgMenu(MsgMenuBase,Menu):
     """An interface that allows handling menus by using reactions as buttons and message.

@@ -74,7 +74,10 @@ class DataParser:
 
             def loader()-> DataBase:
                 with p.open(encoding= 'utf-8')as f:
-                    return cls(**yaml.safe_load(f))
+                    data = yaml.safe_load(f)
+                    if data is None:
+                        return cls()
+                    return cls(**data)
 
             def save_func(self)-> None:
                 with p.open('w', encoding= 'utf-8')as f:
