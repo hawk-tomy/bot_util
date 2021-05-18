@@ -62,7 +62,7 @@ class SioClient(AsyncClient):
         @self.on(event)
         async def decorator(json):
             logger.debug(json)
-            queue.put_nowait(json)
+            await queue.put(json)
 
     def _b2p_handler(self, event: str):
         @self.on(event)
@@ -70,7 +70,7 @@ class SioClient(AsyncClient):
             logger.debug(json)
             id_ = json.get('id_')
             if self.is_b2p_id_in(id_):
-                self.get_b2p_data_by_id(id_).put_nowait(json)
+                await self.get_b2p_data_by_id(id_).put(json)
 
     def add_p2b_event(self, event: str)-> Queue:
         queue = Queue()
@@ -98,33 +98,49 @@ class SioClient(AsyncClient):
     #hard coding events
     def __events_register(self):
         @self.event
-        def login(json):
+        async def login(json):
             logger.info(json)
-            self.sleep(1)
-            self.emit(
+            await self.sleep(1)
+            await self.emit(
                 'login',
                 {'name': sio_setting.name,'password': sio_setting.password,}
             )
 
         @self.event
-        def login_result(json):
+        async def login_result(json):
             logger.info(json)
             if json.pop('status') != 'success':
                 logger.info('login is failed')
-                self.disconnect()
+                await self.disconnect()
             else:
                 logger.info('login is success')
+                await self.emit('get_notice')
 
         @self.event
-        def connect():
+        async def get_notice(json):
+            notice = json['notices']
+            not_notices = {
+                'PTsiege_plugin','PTlobby_plugin','PTPVP_plugin','PTRPG_plugin',
+                'PTNuma_plugin','STlobby_plugin','test_plugin','test1_plugin',
+                'test2_plugin','test3_plugin'
+                } - set(notice)
+            for not_notice in not_notices:
+                await self.emit('notice',{'name':not_notice})
+
+        @self.event
+        async def notice(json):
+            logger.info(f'{json["status"]} : {json["message"]}')
+
+        @self.event
+        async def connect():
             logger.info('connected to server')
 
         @self.event
-        def disconnect():
+        async def disconnect():
             logger.info('disconnected from server')
 
         @self.event
-        def message(msg):
+        async def message(msg):
             logger.info(msg)
 
     #run

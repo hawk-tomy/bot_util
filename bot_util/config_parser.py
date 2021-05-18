@@ -104,12 +104,10 @@ class ConfigParser:
                 'add_default_config', 'load_config', 'default_config',
                 ):
             raise KeyError(f'you cannot use this key ({key}).')
-        flag = key in self.__default_config
         self.__default_config[key] = data
-        if flag:
-            if self.__loaded_config is None:
-                self._loader()
-            self._setter(key)
+        if self.__loaded_config is None:
+            self._loader()
+        self._setter(key)
         return self
 
     @property
