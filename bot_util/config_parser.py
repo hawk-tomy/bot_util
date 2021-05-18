@@ -44,19 +44,7 @@ class ConfigParser:
         keys = (
             self.__loaded_config.keys()
             | self.__default_config.keys()
-            ) - self.__names
-        logger.debug(f'{__name__}.ConfigParser.load_config, any data')
-        logger.debug(
-                'loaded config(config.yaml) :'
-                f'{set(self.__loaded_config.keys())}')
-        logger.debug(
-                'loaded default config(ConfigBase subclass) :'
-                f'{set(self.__default_config.keys())}')
-        logger.debug(
-                f'seted attributes :{self.__names}')
-        logger.debug(
-                f'call setter :{keys}')
-        logger.debug(f'{__name__}.ConfigParser.load_config, end')
+            )
         for key in keys:
             self._setter(key)
 
@@ -82,7 +70,7 @@ class ConfigParser:
             except Exception:
                 return
             else:
-                self.__loaded_config = asdict(value)
+                self.__loaded_config[key] = asdict(value)
         elif default_class is None:
             value = loaded_value
         else:
