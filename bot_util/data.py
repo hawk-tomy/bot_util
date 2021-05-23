@@ -1,4 +1,4 @@
-from .data_parser import DataParser, DataBase
+from .data_parser import DataBase, DataParser
 
 
 __all__ = ('data', 'DataBase')

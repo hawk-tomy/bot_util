@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-from dataclasses import InitVar, asdict, dataclass, field, is_dataclass
+from dataclasses import asdict, dataclass, field, InitVar, is_dataclass
 import logging
 from pathlib import Path
 from typing import Callable, TypeVar, Union

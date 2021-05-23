@@ -8,7 +8,7 @@ from socketio import AsyncClient
 import yaml
 
 
-from .config import ConfigBase, config
+from .config import config, ConfigBase
 
 
 __all__ = ('SioClient',)
