@@ -20,7 +20,7 @@ class Filter:
 
     def filter(self, recoad):
         msg = recoad.getMessage()
-        return not any((s in msg) for s in self.strings)
+        return not any((s in msg) for s in self.filter_strings)
 
 logger = getLogger(__name__)
 logger.addFilter(Filter('PING', 'PONG'))

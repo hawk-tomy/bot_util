@@ -57,7 +57,7 @@ class Embed(Embed_):
             ):
         ...
 
-    def __init__(**kwargs):
+    def __init__(self, **kwargs):
         if len(kwargs.get('title', '')) >= EmbedLimit.title:
             raise ValueError('title is too long')
         if len(kwargs.get('description', '')) >= EmbedLimit.description:
@@ -101,7 +101,7 @@ class Embed(Embed_):
 
     @colour.setter
     def colour(self, value: Union[Colour, _EmptyEmbed]):
-        super().color = value
+        super(Embed, self.__class__).colour.fset(self, value)
 
     color = colour
 
@@ -111,7 +111,7 @@ class Embed(Embed_):
 
     @timestamp.setter
     def timestamp(self, value: Union[_EmptyEmbed, datetime.datetime]):
-        super().timestamp = value
+        super(Embed, self.__class__).timestamp.fset(self, value)
 
     @property
     def footer(self)-> EmbedProxy:
@@ -156,7 +156,6 @@ class Embed(Embed_):
     def author(self)-> EmbedProxy:
         return super().author
 
-    @overload
     def set_author(
             self, *,
             name: str,
@@ -188,7 +187,7 @@ class Embed(Embed_):
         if len(value) >= EmbedLimit.field_value:
             raise ValueError('field value is too long')
 
-        if len(self._fields) == EmbedLimit.fields:
+        if len(self.fields) == EmbedLimit.fields:
             raise ValueError('cannot add to fields')
 
         return super().add_field(
@@ -212,7 +211,7 @@ class Embed(Embed_):
         if len(value) >= EmbedLimit.field_value:
             raise ValueError('field value is too long')
 
-        if len(self._fields) == EmbedLimit.fields:
+        if len(self.fields) == EmbedLimit.fields:
             raise ValueError('cannot add to fields')
 
         return super().insert_field_at(
