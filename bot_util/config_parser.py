@@ -75,8 +75,8 @@ class ConfigParser:
                 value = default_class()
             except Exception:
                 return
-            else:
-                self.__loaded_config[key] = asdict(value)
+            self.__loaded_config[key] = asdict(value)
+            self._save()
         elif default_class is None:
             value = loaded_value
         else:
