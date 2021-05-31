@@ -9,6 +9,7 @@ YAML_DUMP_CONFIG = {
 
 
 def split_line(string: str, num: int)-> list[str]:
+    string, num = str(string), int(num)
     if len(string) <= num:
         return [string]
     str1, str2 = string[:num], string[num:]
