@@ -23,3 +23,14 @@ def split_line(string: str, num: int)-> list[str]:
     else:
         splited.append(str2)
     return splited
+
+def get_unique_list(
+        not_unique_list: list, *, need_flatten: bool= False
+        )-> list:
+    if need_flatten:
+        not_unique_list = sum(not_unique_list, [])
+    return_list = []
+    for element in not_unique_list:
+        if element not in return_list:
+            return_list.append(element)
+    return return_list
