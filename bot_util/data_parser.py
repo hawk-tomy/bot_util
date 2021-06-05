@@ -44,23 +44,31 @@ class DataParser:
         if not self.__path.exists():
             self.__path.mkdir()
             logger.warning(f'create data dirctory')
-        paths = set(
+        need_load = set(
             p.stem for p in self.__path.iterdir()
                 if p.is_file() and p.suffix in ('.yaml','.yml')
-                )
-        keys = paths - self.__names
+                ) | set(self.__dataclass.keys())
+        keys = need_load - self.__names
         for key in keys:
             self._setter(key)
 
     def _setter(self, key: str)-> None:
+        is_not_exists = False
         if (not ((p:=self.__path/f'{key}.yaml').exists()
                 or (p:=self.__path/f'{key}.yml').exists())
-                or key in self.__names):
+                ):
+            p = self.__path/f'{key}.yaml'
+            is_not_exists = True
+        if key in self.__names:
             return
-        self.__names.add(key)
+        if key in self.__dataclass:
+            self.__names.add(key)
         yaml_config = YAML_DUMP_CONFIG | self.__yaml_config.get(key, {})
         cls = self.__dataclass.get(key)
         if cls is None:
+            if is_not_exists:
+                with p.open('w',encoding='utf-8')as f:
+                    yaml.dump({}, f, **yaml_config)
 
             def loader()-> Union[dict, list]:
                 with p.open(encoding='utf-8')as f:
@@ -71,6 +79,9 @@ class DataParser:
                     yaml.dump(value, f, **yaml_config)
 
         else:
+            if is_not_exists:
+                with p.open('w',encoding='utf-8')as f:
+                    yaml.dump(asdict(cls()), f, **yaml_config)
 
             def loader()-> DataBase:
                 with p.open(encoding= 'utf-8')as f:
@@ -122,7 +133,7 @@ class DataParser:
 
         self.__yaml_config[key] = yaml_config
         self.__dataclass[key] = data
-        if key in self.__names:
+        if key not in self.__names:
             self.load_data()
         return self
 

@@ -24,7 +24,7 @@ class BlackList:
         if not flag:
             await ctx.author.send(
                 f'あなたは{name!s}の使用が禁止されています。'
-                ''
+                '異議申し立てはサーバーオーナーへ。'
                 )
         return flag
 
@@ -45,7 +45,7 @@ class BlackList:
 
     def delete(self, id_: Any)-> None:
         if id_ in self.__ids:
-            self.__ids.pop(id_)
+            self.__ids.remove(id_)
 
 
 @dataclass
@@ -72,12 +72,16 @@ class BlackLists(DataBase):
             setattr(self, key, BlackList(ids))
         return getattr(self, key)
 
-    def combine_blacklist(self, *args: Union[str, BlackList])-> BlackList:
+    def combine_blacklist(
+            self, *args: Union[str, BlackList], silent_create= False
+            )-> BlackList:
         ids_list = []
         for arg in args:
             if isinstance(arg, str):
                 if hasattr(self, arg):
                     arg = getattr(self, arg)
+                elif silent_create:
+                    arg = self.create_blacklist(arg)
                 else:
                     raise NameError(f'{arg} is not found.')
             if isinstance(arg, BlackList):
@@ -87,4 +91,4 @@ class BlackLists(DataBase):
         return BlackList(get_unique_list(ids_list, need_flatten=True))
 
 data.add_dataclass(BlackLists, key='blacklists')
-blacklists :BlackLists =data.blacklist
+blacklists :BlackLists =data.blacklists
