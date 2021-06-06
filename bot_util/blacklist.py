@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass, field
+from logging import getLogger
 from typing import Any, Union
 
 
@@ -10,16 +11,21 @@ from .data import data, DataBase
 from .util import get_unique_list
 
 
+logger = getLogger(__name__)
+
+
 @dataclass
 class BlackList:
-    __ids: list[Any]= field(default_factory=list)
+    name: InitVar[str]
+    _ids: list[Any]= field(default_factory=list)
 
     def check(self, msg: Union[Context, Message])-> bool:
-        return msg.author.id not in self.__ids
+        return msg.author.id not in self._ids
 
     async def async_check(
-            self, name: str, ctx: Union[Context, Message]
+            self, ctx: Union[Context, Message], name: str= None
             )-> bool:
+        name = name or self.name
         flag = self.check(ctx)
         if not flag:
             await ctx.author.send(
@@ -30,22 +36,21 @@ class BlackList:
 
     def check_deco(self, name: str= None):
         async def decorator(ctx: Context):
-            nonlocal name
-            name = (name or (ctx.command and ctx.command.name)) or 'この機能'
-            return await self.check(self, name, ctx)
+            _name = name or ctx.message.content.split()[0]
+            return await self.async_check(ctx=ctx, name=_name)
         return check(decorator)
 
     @property
     def ids(self)-> list:
-        return self.__ids.copy()
+        return self._ids.copy()
 
     def add(self, id_: Any)-> None:
-        if id_ not in self.__ids:
-            self.__ids.append(id_)
+        if id_ not in self._ids:
+            self._ids.append(id_)
 
     def delete(self, id_: Any)-> None:
-        if id_ in self.__ids:
-            self.__ids.remove(id_)
+        if id_ in self._ids:
+            self._ids.remove(id_)
 
 
 @dataclass
@@ -59,27 +64,37 @@ class BlackLists(DataBase):
             raise ValueError('blacklists must be dict or None.')
         self.blacklists = blacklists
         for k,v in blacklists.items():
+            instance = BlackList(k, v['_ids'])
+            self.blacklists[k] = instance
             if not hasattr(self, k):
-                setattr(self, k, BlackList(v))
+                setattr(self, k, instance)
             else:
-                raise NameError(f'can not use this key {k}')
+                logger.warning(f'can not use {k} on attribute.')
+
+    def __getitem__(self, item: str)-> BlackList:
+        return self.blacklists[item]
 
     def create_blacklist(self, key: str)-> BlackList:
         if not isinstance(key, str):
             raise ValueError('key must be str.')
-        if not hasattr(self, key):
-            self.blacklists[key] = ids = []
-            setattr(self, key, BlackList(ids))
-        return getattr(self, key)
+        if key not in self.blacklists:
+            v = BlackList(key, [])
+            self.blacklists[key] = v
+            if not hasattr(self, key):
+                setattr(self, key, v)
+        return self[key]
 
     def combine_blacklist(
-            self, *args: Union[str, BlackList], silent_create= False
+            self,
+            *args: Union[str, BlackList],
+            silent_create: bool= False,
+            name: str= None
             )-> BlackList:
         ids_list = []
         for arg in args:
             if isinstance(arg, str):
-                if hasattr(self, arg):
-                    arg = getattr(self, arg)
+                if arg in self.blacklists:
+                    arg = self[arg]
                 elif silent_create:
                     arg = self.create_blacklist(arg)
                 else:
@@ -88,7 +103,10 @@ class BlackLists(DataBase):
                 ids_list.append(arg.ids)
             else:
                 raise ValueError(f'{arg} must be BlackList.')
-        return BlackList(get_unique_list(ids_list, need_flatten=True))
+        return BlackList(
+            name or ', '.join(args),
+            get_unique_list(ids_list, need_flatten=True)
+            )
 
 data.add_dataclass(BlackLists, key='blacklists')
 blacklists :BlackLists =data.blacklists
