@@ -4,9 +4,10 @@ from typing import Any, Union
 
 
 from discord import Message
-from discord.ext.commands import check, Context
+from discord.ext.commands import check
 
 
+from .context import Context
 from .data import data, DataBase
 from .util import get_unique_list
 
@@ -28,10 +29,14 @@ class BlackList:
         name = name or self.name
         flag = self.check(ctx)
         if not flag:
-            await ctx.author.send(
+            msg = (
                 f'あなたは{name!s}の使用が禁止されています。'
                 '異議申し立てはサーバーオーナーへ。'
                 )
+            try:
+                await ctx.re_error(msg)
+            except AttributeError:
+                await ctx.author.send(msg)
         return flag
 
     def check_deco(self, name: str= None):
