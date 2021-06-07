@@ -1,3 +1,4 @@
+from typing import Union
 import discord
 from discord.ext import commands
 
@@ -17,28 +18,33 @@ class Help(commands.HelpCommand):
         self.command_attrs["help"] = "このBOTのヘルプコマンドです。"
         self.color = config.embed_setting.color
 
-    async def create_category_tree(self,category):
-        content_line, lv = [], []
+    async def create_category_tree(
+            self,
+            category: Union[commands.Cog, commands.Group]
+            ):
+        content_line: list[str]= []
+        lv: list[int]= []
         command_list = category.walk_commands()
-        for cmd in await self.filter_commands(command_list,sort=False):
-            if cmd.root_parent:
-                root = ' '.join([i.name for i in cmd.parents[::-1]])
-                indent = '-' * cmd.parents.index(cmd.root_parent)
+        cmds: list[commands.Command]= await self.filter_commands(command_list,sort=False)
+        for cmd in cmds:
+            if cmd.root_parent is None:
                 content_line.append(
-                    (f"{indent}`{self.context.prefix}{root} {cmd.name}`"
-                    f" : {cmd.short_doc}\n")
-                    )
-                lv.append(len(indent))
-            else:
-                content_line.append(
-                    (f"`{self.context.prefix}{cmd.name}`"
-                    f" : {cmd.short_doc}\n")
+                    (f"`{self.get_command_signature(cmd)}`"
+                    f" : {cmd.short_doc}")
                     )
                 lv.append(0)
+            else:
+                indent = '-' * cmd.parents.index(cmd.root_parent)
+                content_line.append(
+                    (f"{indent}`{self.get_command_signature(cmd)}`"
+                    f" : {cmd.short_doc}")
+                    )
+                lv.append(len(indent))
         if lv and min(lv):
             for index, line in enumerate(content_line):
-                content_line[index] = ''.join(line.split('-'*min(lv))[1:])
-        return ''.join(content_line) or 'コマンドは存在しません。'
+                if line.startswith('-'*min(lv)):
+                    content_line[index] = line[min(lv):]
+        return '\n'.join(content_line) or 'コマンドは存在しません。'
 
     async def send_bot_help(self,mapping):
         embed = discord.Embed(title='helpコマンド', color=self.color)
@@ -79,8 +85,9 @@ class Help(commands.HelpCommand):
 
     async def send_group_help(self,group):
         embed = discord.Embed(
-            title=f"{self.context.prefix}{group.qualified_name}",
-            description=group.description,color=self.color
+            title=self.get_command_signature(group),
+            description=group.description,
+            color=self.color
             )
         if group.help:
             embed.add_field(
