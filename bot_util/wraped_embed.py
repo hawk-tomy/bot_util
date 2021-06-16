@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import datetime
+from enum import Enum
 from typing import Union, overload
 
 from discord.colour import Colour
@@ -9,18 +10,14 @@ from discord.embeds import Embed as Embed_
 from discord.embeds import EmbedProxy, EmptyEmbed, _EmptyEmbed
 
 
-@dataclass
-class _EmbedLimit:
-    title: int= 256
-    description: int= 2048
-    fields: int= 25
-    field_name: int= 256
-    field_value: int= 1024
-    footer_text: int= 2048
-    author_name: int=256
-
-
-EmbedLimit = _EmbedLimit()
+class EmbedLimit(Enum):
+    title = 256
+    description = 2048
+    fields = 25
+    field_name = 256
+    field_value = 1024
+    footer_text = 2048
+    author_name = 256
 
 
 class Embed(Embed_):
