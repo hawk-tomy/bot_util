@@ -7,6 +7,7 @@ https://github.com/Rapptz/discord.py
 from __future__ import annotations
 
 
+from collections.abc import Generator
 import datetime
 from typing import Literal, Optional
 
@@ -21,7 +22,7 @@ YAML_DUMP_CONFIG = {
 }
 
 
-def split_line(string: str, num: int)-> list[str]:
+def split_line(string: str, num: int)-> Generator[str]:
     string, num = str(string), int(num)
     if len(string) <= num:
         yield string
