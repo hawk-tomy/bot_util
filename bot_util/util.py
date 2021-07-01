@@ -24,7 +24,8 @@ YAML_DUMP_CONFIG = {
 def split_line(string: str, num: int)-> list[str]:
     string, num = str(string), int(num)
     if len(string) <= num:
-        return [string]
+        yield string
+        return
     str1, str2 = string[:num], string[num:]
     str1_split = str1.splitlines(keepends=True)
     if len(str1_split) > 1:
