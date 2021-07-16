@@ -13,7 +13,7 @@ __all__ = ('Context', )
 
 class Confirm(menus.Menu):
     def __init__(self, msg):
-        super().__init__(timeout=0, delete_message_after=True)
+        super().__init__(timeout=None, delete_message_after=True)
         self.result = None
         self.msg = msg
 
@@ -25,12 +25,14 @@ class Confirm(menus.Menu):
         return await channel.send(embed=await ctx._confirm(self.msg))
 
     @menus.button('\u2705')
-    def ok(self, payload):
+    async def ok(self, payload):
         self.result = True
+        self.stop()
 
     @menus.button('\u274c')
-    def no(self, payload):
+    async def no(self, payload):
         self.result = False
+        self.stop()
 
 
 class Context(_Context):
@@ -85,7 +87,7 @@ class Context(_Context):
         ))
 
     async def _confirm(self, msg: str)-> Embed:
-        return Embed(title=f'\u26a0\ufe0f {msg!s}')
+        return Embed(title=f'\u26a0\ufe0f {msg!s}', color=Colour.gold())
 
     async def confirm(self, msg: str)-> bool:
         return await Confirm(msg).send(self)
