@@ -12,7 +12,14 @@ import datetime
 from typing import Literal, Optional
 
 
-__all__ = ('YAML_DUMP_CONFIG', 'split_line')
+__all__ = (
+    'YAML_DUMP_CONFIG',
+    'split_line',
+    'get_unique_list',
+    'TimestampStyle',
+    'format_dt',
+    'docstring_updater'
+)
 
 
 YAML_DUMP_CONFIG = {
@@ -107,3 +114,10 @@ def format_dt(
     if style is None:
         return f'<t:{int(dt.timestamp())}>'
     return f'<t:{int(dt.timestamp())}:{style}>'
+
+
+def docstring_updater(doc):
+    def deco(func):
+        func.__doc__ += doc
+        return func
+    return deco
