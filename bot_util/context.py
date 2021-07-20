@@ -12,17 +12,21 @@ __all__ = ('Context', )
 
 
 class Confirm(menus.Menu):
-    def __init__(self, msg):
+    def __init__(self, title: str, description: str= None):
         super().__init__(timeout=None, delete_message_after=True)
         self.result = None
-        self.msg = msg
+        self.title = title
+        self.description = description
 
     async def send(self, ctx)-> Optional[bool]:
         await self.start(ctx, wait=True)
         return self.result
 
     async def send_initial_message(self, ctx: Context, channel):
-        return await channel.send(embed=await ctx._confirm(self.msg))
+        return await channel.send(embed=ctx._confirm(
+            title=self.title,
+            description=self.description
+        ))
 
     @menus.button('\u2705')
     async def ok(self, payload):
@@ -55,18 +59,6 @@ class Context(_Context):
             colour=Colour.green()
         )
 
-    async def success(self, title: str, description: str= None)-> Message:
-        return await self.embed(self._success(
-            title=title,
-            description=description
-        ))
-
-    async def re_success(self, title: str, description: str= None)-> Message:
-        return await self.re_embed(self._success(
-            title=title,
-            description=description
-        ))
-
     def _error(self, title: str, description: str= None)-> Embed:
         return Embed(
             title=f'\u26a0 {title!s}',
@@ -74,26 +66,61 @@ class Context(_Context):
             colour=Colour.dark_red()
         )
 
-    async def error(self, title: str, description: str= None)-> Message:
-        return await self.embed(self._error(
-            title=title,
-            description=description
-        ))
+    def _info(self, title: str, description: str= None)-> Embed:
+        return Embed(
+            title=f'\u2139\ufe0f {title!s}',
+            description=description if description is not None else '',
+            colour=Colour.blue()
+        )
 
-    async def re_error(self, title: str, description: str= None)-> Message:
-        return await self.re_embed(self._error(
-            title=title,
-            description=description
-        ))
-
-    async def _confirm(self, msg: str)-> Embed:
-        return Embed(title=f'\u26a0\ufe0f {msg!s}', color=Colour.gold())
-
-    async def confirm(self, msg: str)-> bool:
-        return await Confirm(msg).send(self)
+    def _confirm(self, title: str, description: str= None)-> Embed:
+        return Embed(
+            title=f'\u2754 {title!s}',
+            description=description if description is not None else '',
+            color=Colour.gold()
+        )
 
     async def embed(self, embed: Embed)-> Message:
         return await self.send(embed=embed)
 
     async def re_embed(self, embed: Embed)-> Message:
         return await self.reply(embed=embed)
+
+    async def success(self, title: str, description: str = None)-> Message:
+        return await self.embed(self._success(
+            title=title,
+            description=description
+        ))
+
+    async def re_success(self, title: str, description: str = None)-> Message:
+        return await self.re_embed(self._success(
+            title=title,
+            description=description
+        ))
+
+    async def error(self, title: str, description: str = None)-> Message:
+        return await self.embed(self._error(
+            title=title,
+            description=description
+        ))
+
+    async def re_error(self, title: str, description: str = None)-> Message:
+        return await self.re_embed(self._error(
+            title=title,
+            description=description
+        ))
+
+    async def info(self, title: str, description: str = None)-> Message:
+        return await self.embed(self._info(
+            title=title,
+            description=description
+        ))
+
+    async def re_info(self, title: str, description: str = None)-> Message:
+        return await self.re_embed(self._info(
+            title=title,
+            description=description
+        ))
+
+    async def confirm(self, title: str, description: str= None)-> bool:
+        return await Confirm(title=title, description=description).send(self)

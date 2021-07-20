@@ -133,11 +133,11 @@ class Help(commands.HelpCommand):
         await self.get_destination().send(embed=embed)
 
     def get_ending_note(self):
-        command_name = self.invoked_with
+        command_name = self.context.command.name
         return (
-            f"{self.clean_prefix}{command_name}"
+            f"{self.context.prefix}{command_name}"
             " <command_name> とすることでコマンドについてのヘルプを閲覧できます。\n"
-            f"{self.clean_prefix}{command_name}"
+            f"{self.context.prefix}{command_name}"
             " <category_name> とすることでカテゴリーの詳細情報を閲覧できます。"
         )
 
