@@ -80,47 +80,95 @@ class Context(_Context):
             color=Colour.gold()
         )
 
-    async def embed(self, embed: Embed)-> Message:
-        return await self.send(embed=embed)
+    async def embed(self, embed: Embed, **kwargs)-> Message:
+        return await self.send(embed=embed, **kwargs)
 
-    async def re_embed(self, embed: Embed)-> Message:
-        return await self.reply(embed=embed)
+    async def re_embed(self, embed: Embed, **kwargs)-> Message:
+        return await self.reply(embed=embed, **kwargs)
 
-    async def success(self, title: str, description: str = None)-> Message:
-        return await self.embed(self._success(
-            title=title,
-            description=description
-        ))
+    async def success(
+        self,
+        title: str,
+        description: str = None,
+        **kwargs
+    )-> Message:
+        return await self.embed(
+            self._success(
+                title=title,
+                description=description
+            ),
+            **kwargs
+        )
 
-    async def re_success(self, title: str, description: str = None)-> Message:
-        return await self.re_embed(self._success(
-            title=title,
-            description=description
-        ))
+    async def re_success(
+        self,
+        title: str,
+        description: str = None,
+        **kwargs
+    ) -> Message:
+        return await self.re_embed(
+            self._success(
+                title=title,
+                description=description,
+            ),
+            **kwargs
+        )
 
-    async def error(self, title: str, description: str = None)-> Message:
-        return await self.embed(self._error(
-            title=title,
-            description=description
-        ))
+    async def error(
+        self,
+        title: str,
+        description: str = None,
+        **kwargs
+    )-> Message:
+        return await self.embed(
+            self._error(
+                title=title,
+                description=description
+            ),
+            **kwargs
+        )
 
-    async def re_error(self, title: str, description: str = None)-> Message:
-        return await self.re_embed(self._error(
-            title=title,
-            description=description
-        ))
+    async def re_error(
+        self,
+        title: str,
+        description: str = None,
+        **kwargs
+    )-> Message:
+        return await self.re_embed(
+            self._error(
+                title=title,
+                description=description
+            ),
+            **kwargs
+        )
 
-    async def info(self, title: str, description: str = None)-> Message:
-        return await self.embed(self._info(
-            title=title,
-            description=description
-        ))
+    async def info(
+        self,
+        title: str,
+        description: str = None,
+        **kwargs
+    )-> Message:
+        return await self.embed(
+            self._info(
+                title=title,
+                description=description
+            ),
+            **kwargs
+        )
 
-    async def re_info(self, title: str, description: str = None)-> Message:
-        return await self.re_embed(self._info(
-            title=title,
-            description=description
-        ))
+    async def re_info(
+            self,
+            title: str,
+            description: str = None,
+            **kwargs
+    )-> Message:
+        return await self.re_embed(
+            self._info(
+                title=title,
+                description=description
+            ),
+            **kwargs
+        )
 
     async def confirm(self, title: str, description: str= None)-> bool:
         return await Confirm(title=title, description=description).send(self)
