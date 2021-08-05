@@ -15,7 +15,7 @@ __all__ = (
     'get_unique_list',
     'TimestampStyle',
     'format_dt',
-    'docstring_updater'
+    'docstring_updater',
     #wraped_embed
     'Embed',
 )
