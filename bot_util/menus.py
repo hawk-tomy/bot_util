@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-import asyncio
+from asyncio import create_task, FIRST_COMPLETED, TimeoutError, wait
 import logging
 
 
@@ -106,38 +106,20 @@ class MsgMenuBase:
             tasks = []
             while self._running:
                 tasks = [
-                    asyncio.create_task(
-                        self.bot.wait_for(
-                            'raw_reaction_add',
-                            check=self.reaction_check
-                        ),
-                        name='reaction'
-                    ),
-                    asyncio.create_task(
-                        self.bot.wait_for(
-                            'raw_reaction_remove',
-                            check=self.reaction_check
-                        ),
-                        name='reaction'
-                    ),
-                    asyncio.create_task(
-                        self.bot.wait_for(
-                            'message',
-                            check=self.message_check
-                        ),
-                        name='message'
-                    ),
+                    create_task(self.bot.wait_for('raw_reaction_add', check=self.reaction_check), name='reaction'),
+                    create_task(self.bot.wait_for('raw_reaction_remove', check=self.reaction_check), name='reaction'),
+                    create_task(self.bot.wait_for('message', check=self.message_check), name='message'),
                 ]
-                done, pending = await asyncio.wait(
+                done, pending = await wait(
                     tasks,
                     timeout=self.timeout,
-                    return_when=asyncio.FIRST_COMPLETED
+                    return_when=FIRST_COMPLETED
                 )
                 for task in pending:
                     task.cancel()
 
                 if len(done) == 0:
-                    raise asyncio.TimeoutError()
+                    raise TimeoutError
 
                 task = done.pop()
                 event_name = task.get_name()
@@ -148,7 +130,7 @@ class MsgMenuBase:
                     msg = task.result()
                     loop.create_task(self.update_msg(msg))
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self.__timed_out = True
         finally:
             self._event.set()
