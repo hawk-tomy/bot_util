@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import Optional
 
 
-from discord import Colour, Message
+from discord import Colour, Guild, Message
+from discord.abc import Messageable
 from discord.ext.commands import Context as _Context
 
 from . import menus
@@ -40,6 +41,10 @@ class Confirm(menus.Menu):
 
 
 class Context(_Context):
+    message: Message
+    channel: Messageable
+    guild: Guild
+
     def __init__(self, **attrs):
         self.invoked_error = False
         super().__init__(**attrs)
