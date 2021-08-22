@@ -6,10 +6,10 @@ from typing import Optional
 
 from discord import Colour, Guild, Message
 from discord.abc import Messageable
+from discord.ext import menus
 from discord.ext.commands import Context as _Context
 
 
-from . import menus
 from .wraped_embed import Embed
 
 
