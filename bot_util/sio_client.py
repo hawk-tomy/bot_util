@@ -29,11 +29,12 @@ eio_log.addFilter(Filter('PING', 'PONG'))
 
 
 class SioClient(AsyncClient):
-    def __init__(self):
+    def __init__(self, plugin_names: list[str]):
         super().__init__(
             logger=logger.getChild('sIO'),
             engineio_logger=eio_log,
         )
+        self.__plugin_names = plugin_names
 
         #4 sIO p2b event
         self.__event_dict: dict[str, Queue]= {}
@@ -59,6 +60,10 @@ class SioClient(AsyncClient):
     @property
     def event_dict(self):
         return self.__event_dict.copy()
+
+    @property
+    def plugin_names(self):
+        return self.__plugin_names
 
     #data framework
     def __loader(self):
@@ -154,11 +159,7 @@ class SioClient(AsyncClient):
         @self.event
         async def get_notice(json):
             notice = json['notices']
-            not_notices = {
-                'PTsiege_plugin', 'PTlobby_plugin', 'PTPVP_plugin',
-                'PTRPG_plugin', 'PTNuma_plugin', 'STlobby_plugin',
-                'test_plugin', 'test1_plugin', 'test2_plugin', 'test3_plugin'
-            } - set(notice)
+            not_notices = set(self.plugin_names) - set(notice)
             for not_notice in not_notices:
                 await self.emit('notice', {'name': not_notice})
 
