@@ -11,6 +11,9 @@ from discord.embeds import Embed as Embed_
 from discord.embeds import EmbedProxy, EmptyEmbed, _EmptyEmbed
 
 
+__all__ = ('Embed', 'EmbedLimit')
+
+
 class EmbedLimit(IntEnum):
     title = 256
     description = 2048
@@ -142,14 +145,14 @@ class Embed(Embed_):
         return super().image
 
     def set_image(self, *, url: str)-> Embed:
-        return super().set_image(url)
+        return super().set_image(url=url)
 
     @property
     def thumbnail(self)-> EmbedProxy:
         return super().thumbnail
 
     def set_thumbnail(self, *, url: str)-> Embed:
-        return super().set_thumbnail(url)
+        return super().set_thumbnail(url=url)
 
     @property
     def video(self)-> EmbedProxy:

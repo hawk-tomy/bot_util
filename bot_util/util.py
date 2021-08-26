@@ -1,5 +1,5 @@
 """
-about format_dt function and TimestampStyle type hint are
+about format_dt, utcnow functions and TimestampStyle type hint are
 The MIT License (MIT)
 Copyright (c) 2015-present Rapptz
 https://github.com/Rapptz/discord.py
@@ -23,7 +23,8 @@ __all__ = (
     'maybe_int',
     'TimestampStyle',
     'format_dt',
-    'docstring_updater'
+    'docstring_updater',
+    'utcnow',
 )
 
 
@@ -136,3 +137,16 @@ def maybe_int(obj: T)-> Union[int, T]:
         return int(obj)
     except Exception:
         return obj
+
+
+def utcnow() -> datetime.datetime:
+    """A helper function to return an aware UTC datetime representing the current time.
+    This should be preferred to :meth:`datetime.datetime.utcnow` since it is an aware
+    datetime, compared to the naive datetime in the standard library.
+    .. versionadded:: 2.0
+    Returns
+    --------
+    :class:`datetime.datetime`
+        The current aware datetime in UTC.
+    """
+    return datetime.datetime.now(datetime.timezone.utc)
