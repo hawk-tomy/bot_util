@@ -1,19 +1,13 @@
-"""
-about format_dt, utcnow functions and TimestampStyle type hint are
-The MIT License (MIT)
-Copyright (c) 2015-present Rapptz
-https://github.com/Rapptz/discord.py
-"""
 from __future__ import annotations
 
 
 from collections.abc import Generator
-import datetime
-from typing import Literal, TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from typing import Optional, Union
+    from typing import TypeVar, Union
+    T = TypeVar('T')
 
 
 __all__ = (
@@ -33,9 +27,6 @@ YAML_DUMP_CONFIG = {
     'allow_unicode': True,
     'default_flow_style': False
 }
-
-
-T = TypeVar('T')
 
 
 def split_line(string: str, num: int)-> Generator[str]:
@@ -69,62 +60,6 @@ def get_unique_list(
     return return_list
 
 
-TimestampStyle = Literal['f', 'F', 'd', 'D', 't', 'T', 'R']
-
-
-def format_dt(
-        dt: datetime.datetime,
-        /,
-        style: Optional[TimestampStyle] = None
-)-> str:
-    """
-    A helper function to format a :class:`datetime.datetime`
-    for presentation within Discord.
-
-    This allows for a locale-independent way of presenting data using
-    Discord specific Markdown.
-
-    +-------------+----------------------------+-----------------+
-    |    Style    |       Example Output       |   Description   |
-    +=============+============================+=================+
-    | t           | 22:57                      | Short Time      |
-    +-------------+----------------------------+-----------------+
-    | T           | 22:57:58                   | Long Time       |
-    +-------------+----------------------------+-----------------+
-    | d           | 17/05/2016                 | Short Date      |
-    +-------------+----------------------------+-----------------+
-    | D           | 17 May 2016                | Long Date       |
-    +-------------+----------------------------+-----------------+
-    | f (default) | 17 May 2016 22:57          | Short Date Time |
-    +-------------+----------------------------+-----------------+
-    | F           | Tuesday, 17 May 2016 22:57 | Long Date Time  |
-    +-------------+----------------------------+-----------------+
-    | R           | 5 years ago                | Relative Time   |
-    +-------------+----------------------------+-----------------+
-
-    Note that the exact output depends on the user's locale setting
-    in the client.
-    The example output presented is using the ``en-GB`` locale.
-
-    .. versionadded:: 2.0
-
-    Parameters
-    -----------
-    dt: :class:`datetime.datetime`
-        The datetime to format.
-    style: :class:`str`
-        The style to format the datetime with.
-
-    Returns
-    --------
-    :class:`str`
-        The formatted string.
-    """
-    if style is None:
-        return f'<t:{int(dt.timestamp())}>'
-    return f'<t:{int(dt.timestamp())}:{style}>'
-
-
 def docstring_updater(doc):
     def deco(func):
         func.__doc__ += doc
@@ -137,16 +72,3 @@ def maybe_int(obj: T)-> Union[int, T]:
         return int(obj)
     except Exception:
         return obj
-
-
-def utcnow() -> datetime.datetime:
-    """A helper function to return an aware UTC datetime representing the current time.
-    This should be preferred to :meth:`datetime.datetime.utcnow` since it is an aware
-    datetime, compared to the naive datetime in the standard library.
-    .. versionadded:: 2.0
-    Returns
-    --------
-    :class:`datetime.datetime`
-        The current aware datetime in UTC.
-    """
-    return datetime.datetime.now(datetime.timezone.utc)

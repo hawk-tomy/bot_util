@@ -4,10 +4,10 @@ from __future__ import annotations
 from typing import Union
 
 
+from discord import Embed
 from discord.ext import commands
 
 
-from .wraped_embed import Embed
 from .util import split_line
 
 

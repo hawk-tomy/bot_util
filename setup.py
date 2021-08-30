@@ -3,6 +3,9 @@ from setuptools import setup
 with open('README.md', encoding='utf-8')as f:
     readme = f.read()
 
+with open('requirements.txt', encoding='utf8')as f:
+    requires = f.readlines()
+
 setup(
     name='bot_util',
     author='hawk_tomy',
@@ -14,9 +17,5 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    install_requires=[
-        'pyyaml',
-        'discord.py',
-        'discord-ext-menus@git+https://github.com/Rapptz/discord-ext-menus',
-    ],
+    install_requires=requires,
 )

@@ -1,6 +1,5 @@
 [discord.py]: https://github.com/Rapptz/discord.py
 [discord-ext-menus]: https://github.com/Rapptz/discord-ext-menus
-[dispander]: https://github.com/DiscordBotPortalJP/dispander
 [pyyaml]: https://github.com/yaml/pyyaml
 [dataclasses]: https://docs.python.org/ja/3/library/dataclasses.html
 
@@ -42,17 +41,6 @@ print(config.setting)
 ## data
 
 [dataclasses]と[yaml][pyyaml]を利用したdata管理機能です。dataはカレントディレクトリの`data`フォルダの`.yaml`または、`.yml`から読み込まれます。
-
-## dispander
-
-[dispander]をもとに改変を加えています。使い方は変化していないので、
-[dispander]を参照してください。
-
-### originalからの変更点
-
-- cogとしての機能を削除
-- 送信を決める対象を変更(bug?)
-- 埋め込みのcolorを指定(configで変更可能)
 
 ## help_command
 
@@ -127,13 +115,8 @@ Returns</br>
 - `str`
   - The formatted string.
 
-## wraped embed
-
-discord.Embedに文字数チェックと、関数アノテーションをつけた子クラスです。
-
 # 利用しているパッケージ
 
 - [discord.py]
 - [discord-ext-menus]
-- [dispander]
 - [pyyaml]

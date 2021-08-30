@@ -1,4 +1,4 @@
-discord.py
+git+https://github.com/hawk-tomy/discord.py
 pyyaml
 python-socketio
 git+https://github.com/hawk-tomy/discord-ext-menus
